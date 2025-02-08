@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+	<div class="limiter">
+
+		<div class="container-login100">
+			<img src="{{ url_for('static', filename='images/icon.png') }}" alt="Gait Analysis Logo">
+			&nbsp; &nbsp;  &nbsp;  &nbsp;
+			<div class="wrap-login100 p-t-50 p-b-90">
+
+				<h2 style = "text-align:center" class="login100-form-title p-b-51">
+					Human Gait Recognition and Analysis System.<br>
+				</h2>
+
+
+
+				<!-- Register User Button -->
+				<div class="container-login100-form-btn m-t-17">
+					<button class="login100-form-btn">
+						<a class="login100-form-btn" href="/register_user">Register User</a>
+					</button>
+				</div>
+
+				<!-- Verify User Button -->
+				<div class="container-login100-form-btn m-t-17">
+					<button class="login100-form-btn">
+						<a class="login100-form-btn" href="/verify_user">Verify User</a>
+					</button>
+				</div>
+
+				<br> <br>
+				<!-- Logout Button -->
+				<div class="container-login100-form-btn m-t-17">
+					<button class="login100-form-btn">
+						<a class="login100-form-btn" href="/logout">Logout</a>
+					</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+{% endblock %}

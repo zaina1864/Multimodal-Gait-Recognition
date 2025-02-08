@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% block content %}
+
+	<!-- Title Centered -->
+	<h1 style="text-align: center; margin-bottom: 40px; margin-top: 50px;">Register a New User</h1>
+		<!-- Two-Column Layout -->
+	<div style="display: flex; justify-content: center; gap: 40px;">
+
+		<!-- Left Side: Live Camera Feed -->
+		<div style="width: 640px;">
+			<h3>Live Camera Feed</h3>
+			<img id="video" src="{{ url_for('video_feed') }}" width="640" height="480" style="border: 1px solid black; margin-bottom: 15px;">
+		</div>
+
+		<!-- Right Side: Sensor Data Display + Live Plot -->
+		<div style="width: 640px; border: 1px solid black; padding: 10px; background-color: #f5f5f5;">
+			<h3>Sensor Data (Gyroscope Data)</h3>
+			<div id="sensor-data" style="font-size: 18px; color: blue;">Waiting for Data...</div>
+
+			<!-- Live Plot -->
+			<canvas id="sensorChart" width="600" height="300"></canvas>
+		</div>
+
+	</div>
+<!-- Form Container Aligned Left -->
+	<div style="width: 50%; margin: auto; text-align: left; margin-top: 20px;">
+
+		<!-- User Input Fields -->
+		<form method="POST">
+			<label for="name"><b>Name:</b></label><br>
+			<input type="text" id="name" name="name" placeholder="Enter Name" required style="width: 100%; padding: 8px; margin-bottom: 15px;"><br>
+
+			<label for="age"><b>Age:</b></label><br>
+			<input type="number" id="age" name="age" placeholder="Enter Age" required style="width: 100%; padding: 8px; margin-bottom: 15px;"><br>
+
+			<label for="gender"><b>Gender:</b></label><br>
+			<select id="gender" name="gender" required style="width: 100%; padding: 8px; margin-bottom: 15px;">
+				<option value="male">Male</option>
+				<option value="female">Female</option>
+				<option value="other">Other</option>
+			</select><br>
+			<!-- IMU Connection Buttons -->
+			<div style="text-align: center; margin-top: 20px;">
+			<button type="button" onclick="connectToIMUs()" style="padding: 10px 20px; background-color: orange; color: white; border: none; margin-right: 10px;">Connect to IMUs</button> <br> <br>
+
+			<!-- Start and Stop Recording Buttons -->
+				<!-- Recording Status Message (for start/stop recording) -->
+<div id="recordingStatus" style="text-align: center; font-size: 18px; font-weight: bold; margin-top: 10px; margin-bottom:20px;"></div>
+
+			<button type="button" onclick="startRecording()" style="padding: 10px 20px; background-color: green; color: white; border: none; margin-right: 10px;">Start Recording</button>
+			<button type="button" onclick="stopRecording()" style="padding: 10px 20px; background-color: red; color: white; border: none;">Stop Recording</button><br><br>
+				</div>
+			<!-- Onboarding Status Message -->
+			<div id="onboardingStatus" style="text-align: center; font-size: 18px; font-weight: bold; margin-top: 10px;"></div>
+
+			<!-- Add this inside the existing form below "Stop Recording" -->
+			<div style="text-align: center; margin-top: 10px;">
+			<button type="button" onclick="onboardUser()" style="padding: 10px 40px; background-color: purple; color: white; border: none; margin-top: 10px;">Onboard User</button>
+			</div>
+		</form>
+	</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<!-- JavaScript for Recording -->
+	<script>
+	    let sensorChart;
+		let sensorData = [];
+
+		function startRecording() {
+		// Get values from input fields
+		let name = document.getElementById("name").value;
+		let age = document.getElementById("age").value;
+		let gender = document.getElementById("gender").value;
+		let statusDiv = document.getElementById("recordingStatus"); // Uses recordingStatus div
+
+
+		// Check if fields are filled
+		if (!name || !age || !gender) {
+			statusDiv.innerHTML = "<span style='color: red;'> Please enter Name, Age, and Gender before starting recording.</span>";
+        return;
+		}
+
+		// Send data to Flask API
+		fetch('/start_recording', {
+			method: "POST",  // Use POST method
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ name: name, age: age, gender: gender })  // Send data as JSON
+		})
+		.then(response => response.json())
+		.then(data => {
+        statusDiv.innerHTML = `<span style='color: green;'> ${data.message}</span>`;
+    })
+		.catch(error => console.error("Error starting recording:", error));
+	}
+
+		function stopRecording() {
+		let name = document.getElementById("name").value;
+		let statusDiv = document.getElementById("recordingStatus"); //  Uses recordingStatus div
+
+
+		if (!name) {
+			statusDiv.innerHTML = "<span style='color: red;'> Please enter Name before stopping recording.</span>";
+        return;
+		}
+
+		// Send stop request with name
+		fetch('/stop_recording', {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ name: name })  //  Send name to Flask
+		})
+		.then(response => response.json())
+		.then(data => {
+        statusDiv.innerHTML = `<span style='color: green;'>✅ ${data.message}</span>`;
+    })
+		.catch(error => console.error("Error stopping recording:", error));
+	}
+
+		function onboardUser() {
+        let name = document.getElementById("name").value;
+        let age = document.getElementById("age").value;
+        let gender = document.getElementById("gender").value;
+        let statusDiv = document.getElementById("onboardingStatus");
+
+        if (!name || !age || !gender) {
+            alert("Please enter Name, Age, and Gender before onboarding.");
+            return;
+        }
+        // Show "Onboarding in Progress"
+        statusDiv.innerHTML = "<span style='color: blue;'>Onboarding in progress... Please wait.</span>";
+
+        fetch('/train_model', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: name, age: age, gender: gender })  // ✅ Send user data
+        })
+        .then(response => response.json())
+        .then(data => {
+        // Show "Onboarding Done" once complete
+            statusDiv.innerHTML = `<span style='color: green;'>${data.message}</span>`;
+            })
+        .catch(error => {
+        console.error("Error onboarding user:", error);
+            statusDiv.innerHTML = "<span style='color: red;'>Error in onboarding. Please try again.</span>";
+            });
+    }
+
+		// Function to Connect to IMUs
+		function connectToIMUs() {
+
+		let statusDiv = document.getElementById("recordingStatus");
+
+			fetch('/connect_imus')
+				.then(response => response.json())
+				.then(data => {
+        statusDiv.innerHTML = `<span style='color: green;'> ${data.message}</span>`;
+    })
+				.catch(error => console.error("Error connecting to IMUs:", error));
+		}
+		 function fetchSensorData() {
+        fetch('/get_sensor_data')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("sensor-data").innerText = "GYRt_taL: " + data.gyro_taL;
+            })
+            .catch(error => console.error("Error fetching sensor data:", error));
+    }
+    	// Function to Fetch & Plot Data
+		function fetchPlotData() {
+			fetch('/get_plot_data')
+				.then(response => response.json())
+				.then(data => {
+					sensorData = data.data;
+					updateChart();
+				})
+				.catch(error => console.error("Error fetching plot data:", error));
+		}
+
+		// Initialize Chart.js
+		function initializeChart() {
+			const ctx = document.getElementById('sensorChart').getContext('2d');
+			sensorChart = new Chart(ctx, {
+				type: 'line',
+				data: {
+					labels: Array(100).fill(''),
+					datasets: [{
+						label: 'Left Gyro Signal',
+						data: sensorData,
+						borderColor: 'blue',
+						borderWidth: 2,
+						fill: false
+					}]
+				},
+				options: {
+					scales: { x: { display: false }, y: { beginAtZero: false } },
+					responsive: true
+				}
+			});
+		}
+
+		// Update Chart Data
+		function updateChart() {
+			sensorChart.data.datasets[0].data = sensorData;
+			sensorChart.update();
+		}
+
+		// Call Functions Every 100ms
+		setInterval(fetchPlotData, 100);
+		initializeChart();
+
+
+	</script>
+
+{% endblock %}

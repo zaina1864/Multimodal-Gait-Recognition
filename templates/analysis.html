@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1 style="text-align: center; margin-bottom: 30px;">Gait Analysis Results</h1>
+
+<!-- ✅ Display Video First -->
+<div style="text-align: center; margin-bottom: 20px;">
+    <h2>Annotated Video</h2>
+    <video id="annotatedVideo" width="1040" height="480" controls>
+        <source id="videoSource" src="" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+</div>
+
+<!-- ✅ Step Counts Centered -->
+<div style="display: flex; justify-content: center; text-align: center; gap: 100px; margin-bottom: 20px;">
+    <div>
+        <h3>Steps from Sensor Data</h3>
+        <div id="sensorStepCount" style="font-size: 24px; color: green; font-weight: bold;"></div>
+    </div>
+    <div>
+        <h3>Steps from Video Data</h3>
+        <div id="videoStepCount" style="font-size: 24px; color: blue; font-weight: bold;"></div>
+    </div>
+</div>
+
+<!-- ✅ Centered Gait Analysis Table with Borders and Spaced Headers -->
+<div style="text-align: center; margin-bottom: 30px; display: flex; justify-content: center;">
+    <div>
+        <h3>Gait Analysis Data (Video) </h3>
+        <table id="videoTable" style="border-collapse: collapse; width: 80%; margin: auto; text-align: center; border: 2px solid black;">
+            <thead>
+                <tr style="height: 50px; font-size: 18px;">
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<!-- ✅ Centered Gait Analysis Table with Borders and Spaced Headers -->
+<div style="text-align: center; margin-bottom: 30px; display: flex; justify-content: center;">
+    <div>
+        <h3>Gait Analysis Data (Sensor)</h3>
+        <table id="sensorTable" style="border-collapse: collapse; width: 80%; margin: auto; text-align: center; border: 2px solid black;">
+            <thead>
+                <tr style="height: 50px; font-size: 18px;">
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<!-- ✅ Plots Stacked Vertically -->
+<div style="text-align: center; margin-bottom: 30px;">
+    <h3>Gait Event Detection (Video) </h3>
+    <img id="videoRightPlot" src="" width="700" onerror="this.style.display='none'">
+</div>
+<div style="text-align: center; margin-bottom: 30px;">
+
+    <img id="videoLeftPlot" src="" width="700" onerror="this.style.display='none'">
+</div>
+<div style="text-align: center; margin-bottom: 30px;">
+    <h3>Gait Event Detection (Sensor)</h3>
+    <img id="sensorPlot" src="" width="700" onerror="this.style.display='none'">
+</div>
+<div style="text-align: center; margin-bottom: 30px;">
+
+    <img id="swingPlot" src="" width="700" onerror="this.style.display='none'">
+</div>
+
+<!-- ✅ JavaScript to Fetch Data from Flask -->
+<script>
+    function analyzeData() {
+
+        fetch('/analyze', {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message.includes("Error")) {
+                alert(data.message);
+                return;
+            }
+
+            // ✅ Display Video
+            document.getElementById("videoSource").src = data.output_video_path;
+            document.getElementById("annotatedVideo").load();
+
+            // ✅ Step Counts
+            document.getElementById("sensorStepCount").innerHTML = data.sensor_step_count;
+            document.getElementById("videoStepCount").innerHTML = data.video_step_count;
+
+            // ✅ Gait Table with Borders and Spaced Headers
+            let tableHtml = '<table border="1" style="width: 100%; border-collapse: collapse;">' + data.video_gait_table + '</table>';
+            document.getElementById("videoTable").innerHTML = tableHtml;
+
+              // ✅ Gait Table with Borders and Spaced Headers
+            let table1Html = '<table border="1" style="width: 100%; border-collapse: collapse;">' + data.sensor_gait_table + '</table>';
+            document.getElementById("sensorTable").innerHTML = table1Html;
+
+            // ✅ Plots
+            document.getElementById("videoRightPlot").src = data.video_plot_right;
+            document.getElementById("videoLeftPlot").src = data.video_plot_left;
+            document.getElementById("sensorPlot").src = data.stance_plot;
+            document.getElementById("swingPlot").src = data.swing_plot;
+        })
+        .catch(error => console.error("Error fetching analysis:", error));
+    }
+
+    // Call analysis on page load
+    window.onload = analyzeData;
+</script>
+
+{% endblock %}

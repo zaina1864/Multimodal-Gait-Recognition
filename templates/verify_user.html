@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+{% block content %}
+
+	<!-- Title Centered -->
+	<h1 style="text-align: center; margin-bottom: 40px; margin-top: 50px;">Verify an Existing User</h1>
+		<!-- Two-Column Layout -->
+	<div style="display: flex; justify-content: center; gap: 40px;">
+
+		<!-- Left Side: Live Camera Feed -->
+		<div style="width: 640px;">
+			<h3>Live Camera Feed</h3>
+			<img id="video" src="{{ url_for('video_feed') }}" width="640" height="480" style="border: 1px solid black; margin-bottom: 15px;">
+		</div>
+
+		<!-- Right Side: Sensor Data Display + Live Plot -->
+		<div style="width: 640px; border: 1px solid black; padding: 10px; background-color: #f5f5f5;">
+			<h3>Sensor Data (Gyroscope Data)</h3>
+			<div id="sensor-data" style="font-size: 18px; color: blue;">Waiting for Data...</div>
+
+			<!-- Live Plot -->
+			<canvas id="sensorChart" width="600" height="300"></canvas>
+		</div>
+
+	</div>
+<!-- Form Container Aligned Left -->
+	<div style="width: 50%; margin: auto; text-align: left; margin-top: 20px;">
+
+		<!-- User Input Fields -->
+		<form method="POST">
+
+			<div style="text-align: center; margin-top: 20px;">
+			<button type="button" onclick="connectToIMUs()" style="padding: 10px 20px; background-color: orange; color: white; border: none; margin-right: 10px;">Connect to IMUs</button> <br> <br>
+
+			<!-- Start and Stop Recording Buttons -->
+				<!-- Recording Status Message (for start/stop recording) -->
+			<div id="recordingStatus" style="text-align: center; font-size: 18px; font-weight: bold; margin-top: 10px; margin-bottom:20px;"></div>
+
+			<button type="button" onclick="startVerification()" style="padding: 10px 20px; background-color: green; color: white; border: none; margin-right: 10px;">Start Recording</button>
+			<button type="button" onclick="stopVerification()" style="padding: 10px 20px; background-color: red; color: white; border: none;">Stop Recording</button><br><br>
+				</div>
+			<!-- Onboarding Status Message -->
+			<div id="verifyingStatus" style="text-align: center; font-size: 18px; font-weight: bold; margin-top: 10px;"></div>
+
+
+		</form>
+
+
+		<!-- ✅ Verification Results Container -->
+		<div id="verificationResultsContainer" style="display: flex; justify-content: center; margin-top: 10px;">
+			<div style="text-align: center; border: 2px ; padding: 15px; width: 50%; border-radius: 10px;">
+
+				<button type="button" onclick="verifyUser()" style="padding: 10px 20px; background-color: purple; color: white; border: none; margin-top: 10px;">
+					Verify User
+				</button>
+				<!-- ✅ "Click Here for Analysis" Hyperlink -->
+				<div style="text-align: center; margin-top: 15px;">
+					<a href="/analysis_page" style="font-size: 18px; color: blue; text-decoration: underline;">🔍 Click Here for Gait Analysis</a>
+				</div>
+				<div id="verificationResults" ></div>
+			</div>
+		</div>
+
+		<!-- ✅ Similarity Scores Table -->
+		<div style="display: flex; justify-content: center; margin-top: 20px;">
+			<div style="width: 50%; text-align: center; margin-bottom: 20px;">
+				<h3 style="margin-bottom: 20px;">Similarity Scores</h3>
+				<table border="1" style="width: 100%; text-align: center; border-collapse: collapse;">
+					<thead>
+						<tr style="background-color: #4CAF50; color: white;">
+							<th>ID</th>
+							<th>Similarity Score</th>
+						</tr>
+					</thead>
+					<tbody id="scoresTableBody">
+						<!-- Data will be inserted here dynamically -->
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+	</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<!-- JavaScript for Recording -->
+	<script>
+	    let sensorChart;
+		let sensorData = [];
+
+		function startVerification() {
+    let statusDiv = document.getElementById("recordingStatus");
+    statusDiv.innerHTML = "<span style='color: blue;'>⏳ Verification in progress... Please wait.</span>";
+
+    fetch('/start_verification', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+    })
+    .then(response => response.json())
+    .then(data => {
+        statusDiv.innerHTML = `<span style='color: green;'> ${data.message}</span>`;
+    })
+    .catch(error => {
+        console.error("Error starting verification:", error);
+        statusDiv.innerHTML = "<span style='color: red;'> Error in verification. Please try again.</span>";
+    });
+}
+
+function stopVerification() {
+    let statusDiv = document.getElementById("recordingStatus");
+
+    fetch('/stop_verification', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+    })
+    .then(response => response.json())
+    .then(data => {
+        statusDiv.innerHTML = `<span style='color: green;'>${data.message}</span>`;
+    })
+    .catch(error => {
+        console.error("Error stopping verification:", error);
+        statusDiv.innerHTML = "<span style='color: red;'> Error stopping verification. Please try again.</span>";
+    });
+}
+
+
+
+	function verifyUser() {
+    let statusDiv = document.getElementById("verificationResults");
+    let scoresTableBody = document.getElementById("scoresTableBody");
+
+    // Show "Verification in Progress"
+    statusDiv.innerHTML = "<span style='color: blue;'>⏳ Running verification... Please wait.</span>";
+
+    fetch('/verify_user_data', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+    })
+    .then(response => response.json())
+    .then(data => {
+
+       let formattedMessage = data.message.replace(/\n/g, "<br>");
+       let messageHTML = `<div style="text-align: left; font-family: Arial, sans-serif;
+                            padding: 15px; border: 2px solid green; border-radius: 8px;
+                            width: fit-content; margin: auto; background-color: #f0fff0;">
+            <p><strong>Verification Results:</strong></p>
+            <p>${formattedMessage}</p>
+        </div>`;
+
+        statusDiv.innerHTML = messageHTML;
+        // Format similarity scores table
+        let scores = JSON.parse(data.scores);
+        scoresTableBody.innerHTML = "";  // Clear previous entries
+
+        scores.forEach(row => {
+            let newRow = `<tr>
+                <td>${row.ID}</td>
+                <td>${row["Similarity Score"].toFixed(4)}</td>
+            </tr>`;
+            scoresTableBody.innerHTML += newRow;
+        });
+
+    })
+    .catch(error => {
+        console.error("Error verifying user:", error);
+        statusDiv.innerHTML = "<span style='color: red;'> Verification failed. Please try again.</span>";
+    });
+}
+
+
+		// Function to Connect to IMUs
+		function connectToIMUs() {
+
+		let statusDiv = document.getElementById("recordingStatus");
+
+			fetch('/connect_imus')
+				.then(response => response.json())
+				.then(data => {
+        statusDiv.innerHTML = `<span style='color: green;'> ${data.message}</span>`;
+    })
+				.catch(error => console.error("Error connecting to IMUs:", error));
+		}
+
+
+		 function fetchSensorData() {
+        fetch('/get_sensor_data')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("sensor-data").innerText = "GYRt_taL: " + data.gyro_taL;
+            })
+            .catch(error => console.error("Error fetching sensor data:", error));
+    }
+
+
+    	// Function to Fetch & Plot Data
+		function fetchPlotData() {
+			fetch('/get_plot_data')
+				.then(response => response.json())
+				.then(data => {
+					sensorData = data.data;
+					updateChart();
+				})
+				.catch(error => console.error("Error fetching plot data:", error));
+		}
+
+		// Initialize Chart.js
+		function initializeChart() {
+			const ctx = document.getElementById('sensorChart').getContext('2d');
+			sensorChart = new Chart(ctx, {
+				type: 'line',
+				data: {
+					labels: Array(100).fill(''),
+					datasets: [{
+						label: 'Left Gyro Signal',
+						data: sensorData,
+						borderColor: 'blue',
+						borderWidth: 2,
+						fill: false
+					}]
+				},
+				options: {
+					scales: { x: { display: false }, y: { beginAtZero: false } },
+					responsive: true
+				}
+			});
+		}
+
+		// Update Chart Data
+		function updateChart() {
+			sensorChart.data.datasets[0].data = sensorData;
+			sensorChart.update();
+		}
+
+		// Call Functions Every 100ms
+		setInterval(fetchPlotData, 100);
+		initializeChart();
+
+
+	</script>
+
+{% endblock %}
