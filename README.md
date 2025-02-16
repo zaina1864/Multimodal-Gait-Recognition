@@ -38,6 +38,12 @@ python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt 
 
+Download Model Files:
+The model files are too large to be stored on GitHub. Please follow these steps:
+
+1. Download the model from [Google Drive Link](https://drive.google.com/drive/folders/1xjIoS_BFGaal67BSdMveRRKEc5V1wOQe?usp=sharing).
+2. Extract the files if needed.
+3. Place the `model` folder inside the GaitApp folder.
 
 
 Running the Application:
