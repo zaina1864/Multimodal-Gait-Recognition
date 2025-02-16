@@ -27,16 +27,12 @@ Protobuf 3.20 (for TensorFlow)
 
 Virtual environment (recommended)
 
-Installation
-
 Clone the repository:
 
 git clone https://github.com/zaina1864/GaitApp.git
 cd GaitApp
 
-Set up Virtual Environments
-
-
+Set up Virtual Environment:
 
 python -m venv venv
 source venv/bin/activate
@@ -44,18 +40,15 @@ pip install -r requirements.txt
 
 
 
-Running the Application
+Running the Application:
 
-Step 1: Start the Backend
-
-Activate the TensorFlow environment and run the backend:
+Activate the environment and run the app:
 
 source venv/bin/activate 
 python app.py
 
 
-
-Testing the Application
+Testing the Application:
 
 Register a User
 
