@@ -81,7 +81,7 @@ Open the app in your browser to begin.
 - The app will process the input and display **gait analysis results**
 
 ---
----
+
 
 
 ## 🧠 Model Architecture Overview
