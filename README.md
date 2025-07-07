@@ -81,6 +81,29 @@ Open the app in your browser to begin.
 - The app will process the input and display **gait analysis results**
 
 ---
+---
+
+
+## 🧠 Model Architecture Overview
+Shows how the sensor and video models fuse to classify gait type.
+
+![IMU-Based Model Architecture](model_arch.png)
+![Video-Based Model Architecture](model1.png)
+
+---
+
+## 🖱️ Gait Analysis UI – Upload & Analyze
+Main interface where users sign up to register a new user and verify an existing user for processing.
+
+![Gait UI Upload](home.png)
+![Gait UI Upload](register2.png)
+
+---
+
+## ✅ Verification Results
+Displays verification and classification result after processing input data.
+
+![Gait Result Display](results2.png)
 
 ## 🛠️ Troubleshooting
 
