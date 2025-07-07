@@ -30,8 +30,8 @@ Before running the app, make sure you have the following:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/zaina1864/GaitApp.git
-cd GaitApp
+git clone https://github.com/zaina1864/Multimodal-Gait-Recognition.git
+cd Multimodal-Gait-Recognition
 ```
 
 ### 2. Set Up Virtual Environment
@@ -50,7 +50,7 @@ Model files are not included in the repo due to size limitations.
 
 1. [Download from Google Drive](https://drive.google.com/drive/folders/1xjIoS_BFGaal67BSdMveRRKEc5V1wOQe?usp=sharing)  
 2. Extract if necessary  
-3. Place the `model/` folder inside the `GaitApp/` directory
+3. Place the `model/` folder inside the `Multimodal-Gait-Recognition/` directory
 
 ---
 
