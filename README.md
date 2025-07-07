@@ -1,91 +1,107 @@
-Gait Analysis Application
+# 🦿 Gait Analysis Application
 
-Overview
+A multimodal gait analysis system combining **sensor-based** and **video-based** models to extract, analyze, and interpret gait features for user identification and movement assessment.
 
-This application performs gait analysis using sensor and video models. It extracts and analyzes gait features to provide insights into user movement patterns.
+---
 
-Features:
+## 🚀 Features
 
-Sensor-based gait recognition
+- 📱 Sensor-based gait recognition using IMU data  
+- 🎥 Video-based gait analysis using pose estimation  
+- 🔗 Multi-modal fusion for improved accuracy  
+- 👤 User registration and verification system  
+- 📊 Insightful visualizations of gait data
 
-Video-based gait analysis
+---
 
-Multi-modal fusion for improved accuracy
+## 🧱 Prerequisites
 
-User registration and verification
+Before running the app, make sure you have the following:
 
-Prerequisites:
+- Python **3.8+**
+- TensorFlow **2.9**
+- Protobuf **3.20**
+- Virtual environment setup (recommended)
 
-Ensure you have the following installed:
+---
 
-Python 3.8+
+## 📦 Installation
 
-TensorFlow 2.9
+### 1. Clone the Repository
 
-Protobuf 3.20 (for TensorFlow)
-
-
-Virtual environment (recommended)
-
-Clone the repository:
-
+```bash
 git clone https://github.com/zaina1864/GaitApp.git
 cd GaitApp
+```
 
-Set up Virtual Environment:
+### 2. Set Up Virtual Environment
 
+```bash
 python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt 
+source venv/bin/activate         # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
 
-Download Model Files:
-The model files are too large to be stored on GitHub. Please follow these steps:
+---
 
-1. Download the model from [Google Drive Link](https://drive.google.com/drive/folders/1xjIoS_BFGaal67BSdMveRRKEc5V1wOQe?usp=sharing).
-2. Extract the files if needed.
-3. Place the `model` folder inside the GaitApp folder.
+## 🔍 Model Files
 
+Model files are not included in the repo due to size limitations.
 
-Running the Application:
+1. [Download from Google Drive](https://drive.google.com/drive/folders/1xjIoS_BFGaal67BSdMveRRKEc5V1wOQe?usp=sharing)  
+2. Extract if necessary  
+3. Place the `model/` folder inside the `GaitApp/` directory
 
-Activate the environment and run the app:
+---
 
-source venv/bin/activate 
+## 🧪 Running the Application
+
+```bash
+source venv/bin/activate         # Or: venv\Scripts\activate
 python app.py
+```
 
+Open the app in your browser to begin.
 
-Testing the Application:
+---
 
-Register a User
+## 🧰 How to Use
 
-Open the application in your browser.
+### 👤 Register a User
+- Open the app in browser
+- Go to the **Registration Page**
+- Fill in the required details and submit
 
-Navigate to the registration page.
+### ✅ Verify a User
+- Log in using your registered credentials
+- The system will authenticate and verify you
 
-Provide necessary details and submit.
+### 📈 Analyze Gait Data
+- Upload either **sensor** or **video** data
+- The app will process the input and display **gait analysis results**
 
-Verify a User
+---
 
-Log in using registered credentials.
+## 🛠️ Troubleshooting
 
-The system will check and verify the user.
+- **Protobuf conflicts**: Make sure you're in the correct virtual environment before running the app.
+- Ensure all model files are placed correctly under the `model/` directory.
 
-Analyze Gait Data
+---
 
-Upload sensor or video data.
+## 🤝 Contributing
 
-The system will process and display gait analysis results.
+Contributions are welcome!  
+Feel free to fork the repo and submit a pull request with improvements.
 
-Troubleshooting
+---
 
-If you encounter Protobuf version conflicts, ensure you activate the correct environment before running the application.
+## 📄 License
 
+This project is licensed under the [MIT License](LICENSE).
 
+---
 
-Contributing
+## ✨ Acknowledgments
 
-Feel free to fork this repository and submit pull requests for improvements.
-
-License
-
-This project is licensed under the MIT License.
+Thanks to the ADU research lab and all contributors for guidance and support throughout the development of this application.
