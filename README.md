@@ -105,6 +105,29 @@ Displays verification and classification result after processing input data.
 
 ![Gait Result Display](results2.png)
 
+---
+
+## 📊 Gait Feature Analysis – Group Mean Symmetry Index (SI)
+
+The following figures compare the **Group Mean Symmetry Index (SI)** values for two critical gait features — **Stride Time** and **Stance Time** — using data from both **IMU sensors** and **video-based models**.
+
+### 📈 IMU-Based Symmetry Index
+This figure displays the mean SI values calculated from IMU sensor data.
+
+![IMU SI](group_mean_IMU.png)
+
+---
+
+### 📈 Video-Based Symmetry Index
+This figure shows the corresponding SI values using video-based gait analysis.
+
+![Video SI](group_mean_video.png)
+
+> ✅ Lower SI values indicate more symmetric gait. These plots demonstrate that both modalities capture gait symmetry accurately, with minor variation in precision.
+
+---
+
+
 ## 🛠️ Troubleshooting
 
 - **Protobuf conflicts**: Make sure you're in the correct virtual environment before running the app.
